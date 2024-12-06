@@ -4,6 +4,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import project.LogStatus;
 import project.model.User;
 import project.database.DatabaseManager;
 import project.service.MessageHandler;
@@ -49,14 +50,14 @@ public class BotLogic implements LongPollingSingleThreadUpdateConsumer {
             if (!databaseManager.isUserExist(update)) {
                 user = new User(update);
                 databaseManager.addUser(user);
-                loggingService.log(user, "New user registered");
+                loggingService.log(user, "New user registered", LogStatus.INFO);
                 messageHandler.sendTextMessage(user, "Добро пожаловать, " + user.getFirstName() + "! Это бот для напоминаний.\n \n" +
                         "Пожалуйста, укажите ваш город для установки правильного часового пояса.");
                 return;
             }
 
             String messageText = update.getMessage().getText();
-            loggingService.log(user, "Received message: " + messageText);
+            loggingService.log(user, "Received message: " + messageText, LogStatus.INFO);
 
             // установка города
             if (!user.hasSetCity()) {
@@ -70,7 +71,7 @@ public class BotLogic implements LongPollingSingleThreadUpdateConsumer {
                 reminderService.handleCommand(user, messageText);
             }
         } catch (Exception e) {
-            loggingService.log(user, "Error processing message: " + e.getMessage());
+            loggingService.log(user, "Error processing message: " + e.getMessage(), LogStatus.ERROR);
             messageHandler.sendTextMessage(user, "Произошла ошибка при обработке сообщения. Пожалуйста, попробуйте еще раз.");
             messageHandler.sendStartKeyboard(user);
         }
