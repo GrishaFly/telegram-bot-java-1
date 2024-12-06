@@ -1,5 +1,6 @@
 package project.service;
 
+import project.LogStatus;
 import project.model.Reminders;
 import project.model.User;
 import project.database.DatabaseManager;
@@ -24,8 +25,6 @@ public class ReminderService {
     }
 
     public void handleCommand(User user, String command) {
-        //loggingService.log(user, "Command: " + command);
-
         // Проверяем, не забанен ли пользователь
         if (user.isBanned()) {
             messageHandler.sendTextMessage(user, "Извините, вы заблокированы в системе. Обратитесь к администратору.");
@@ -45,7 +44,7 @@ public class ReminderService {
                 if (session != null && session.getReminder() != null) {
                     handleReminderInput(user, command, session);
                 } else {
-                    messageHandler.sendTextMessage(user, "❓ Неизвестная команда");
+                    //messageHandler.sendTextMessage(user, "❓ Неизвестная команда");
                     messageHandler.sendStartKeyboard(user);
                 }
         }
@@ -104,13 +103,13 @@ public class ReminderService {
     }
 
     private void handleDateInput(User user, String input, UserSession session) {
-        loggingService.log(user, "Date input: " + input);
+        loggingService.log(user, "Date input: " + input, LogStatus.INFO);
 
         if (!session.getReminder().isValidDate(input)) {
             try {
                 session.getReminder().isValidDate(input);
             } catch (IllegalArgumentException e) {
-                loggingService.log(user, "Invalid date format: " + e.getMessage());
+                loggingService.log(user, "Invalid date format: " + e.getMessage(), LogStatus.ERROR);
                 messageHandler.sendTextMessage(user, e.getMessage());
                 return;
             }
@@ -125,11 +124,11 @@ public class ReminderService {
 
         try {
             session.getReminder().createReminder(input);
-            loggingService.log(user, "Reminder created successfully");
+            loggingService.log(user, "Reminder created successfully", LogStatus.INFO);
             messageHandler.sendTextMessage(user, "Напоминание успешно создано!");
             sessionService.clearSession(user);
         } catch (Exception e) {
-            loggingService.log(user, "Error creating reminder: " + e.getMessage());
+            loggingService.log(user, "Error creating reminder: " + e.getMessage(), LogStatus.ERROR);
             messageHandler.sendTextMessage(user, "Произошла ошибка при создании напоминания: " + e.getMessage());
             sessionService.clearSession(user);
         }

@@ -28,6 +28,7 @@ public class Reminders {
 
     public boolean isValidDate(String dateStr) {
         return DateTimeParser.isValidDate(dateStr, user.getTimeZone());
+
     }
 
     public void createReminder(String dateStr) {

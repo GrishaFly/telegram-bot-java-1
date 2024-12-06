@@ -4,6 +4,10 @@ import project.model.User;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/*
+Этот класс отвечает за управление сессиями пользователей.
+ */
+
 public class UserSessionService {
     private static UserSessionService instance;
     private final Map<Long, UserSession> userSessions;
@@ -20,7 +24,14 @@ public class UserSessionService {
     }
 
     public UserSession getSession(User user) {
-        return userSessions.computeIfAbsent(user.getId(), k -> new UserSession());
+        Long userId = user.getId();
+        if (userSessions.containsKey(userId)) {
+            return userSessions.get(userId);
+        } else {
+            UserSession newSession = new UserSession();
+            userSessions.put(userId, newSession);
+            return newSession;
+        }
     }
 
     public void updateSession(User user, UserSession session) {

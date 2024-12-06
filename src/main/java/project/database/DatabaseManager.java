@@ -82,11 +82,6 @@ public class DatabaseManager {
             return null;
         }
 
-//        String timezone = userDoc.get("timezone", String.class);
-//        if (timezone == null) {
-//            timezone = "UTC";
-//        }
-
         return new User(
                 userDoc.getLong("_id"),
                 userDoc.getString("username"),
